@@ -17,7 +17,38 @@ uint32_t lastLoop = 0;
 //define a circle by position and radius
 float circleX = 13.5;
 float circleY = 1.5;
-float circleR = 2;
+float circleR = 0.7;
+
+
+
+//define a triangle by three corners
+float cornerAx = -1;
+float cornerAy = -1;
+float cornerBx = -1;
+float cornerBy = 8;
+float cornerCx = 8;
+float cornerCy = 8;
+
+bool sideOfVector(float px, float py, float Ax, float Ay, float Bx, float By)
+{
+/*
+https://en.wikipedia.org/wiki/Cross_product
+cross(AB, Ap) is positive if p is to the left of AB
+*/
+float crossProd = (Bx-Ax)*(py-Ay) - (By-Ay)*(px-Ax); //https://en.wikipedia.org/wiki/Satanism
+return crossProd > 0;
+}
+
+bool insideTri(float px, float py, float Ax, float Ay, float Bx, float By, float Cx, float Cy)
+{
+bool inside=true;
+inside &= sideOfVector(px, py, Ax, Ay, Bx, By);
+inside &= sideOfVector(px, py, Bx, By, Cx, Cy);
+inside &= sideOfVector(px, py, Cx, Cy, Ax, Ay);
+return inside;
+}
+
+
 
 
 //https://en.wikipedia.org/wiki/Pythagorean_theorem
@@ -56,12 +87,16 @@ if(loopTime>lastLoop+interval){
 lastLoop=loopTime;
 //code here runs once per interval
 
+circleR += 0.1;
+
 for(int row = 0; row<height; row++)
 {  //row by row
 for(int col=0; col<width; col++)
 {  //one pixel at a time
 
 bool pxTest = isInCircle(col, row, circleX, circleY, circleR);
+pxTest |= insideTri(col, row, cornerAx, cornerAy, cornerBx, cornerBy, cornerCx, cornerCy);
+
 
 //figure out which led on the strip
 int ledPos = col + (row*(width));
