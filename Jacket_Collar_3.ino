@@ -22,12 +22,12 @@ float circleR = 0.7;
 
 
 //define a triangle by three corners
-float cornerAx = -1;
+float cornerAx = 14;
 float cornerAy = -1;
 float cornerBx = -1;
-float cornerBy = 8;
-float cornerCx = 8;
-float cornerCy = 8;
+float cornerBy = 1.5;
+float cornerCx = 14;
+float cornerCy = 5;
 
 bool sideOfVector(float px, float py, float Ax, float Ay, float Bx, float By)
 {
@@ -36,7 +36,7 @@ https://en.wikipedia.org/wiki/Cross_product
 cross(AB, Ap) is positive if p is to the left of AB
 */
 float crossProd = (Bx-Ax)*(py-Ay) - (By-Ay)*(px-Ax); //https://en.wikipedia.org/wiki/Satanism
-return crossProd > 0;
+return crossProd < 0;
 }
 
 bool insideTri(float px, float py, float Ax, float Ay, float Bx, float By, float Cx, float Cy)
@@ -94,12 +94,22 @@ for(int row = 0; row<height; row++)
 for(int col=0; col<width; col++)
 {  //one pixel at a time
 
-bool pxTest = isInCircle(col, row, circleX, circleY, circleR);
-pxTest |= insideTri(col, row, cornerAx, cornerAy, cornerBx, cornerBy, cornerCx, cornerCy);
-
+//bool pxTest = isInCircle(col, row, circleX, circleY, circleR);
+bool pxTest = insideTri(col, row, cornerAx, cornerAy, cornerBx, cornerBy, cornerCx, cornerCy);
 
 //figure out which led on the strip
-int ledPos = col + (row*(width));
+//int ledPos = col + (row*(width)); //assumes raster
+//int ledPos = ((row % 2) == 0) ? ((row*(width)) + col) : ((row*(width)) + (width-col-1)); //zigzag
+//zigzag wiring
+int ledPos;
+if((row % 2) == 0)
+{
+ledPos = ((row*(width)) + col);
+}
+else
+{
+ledPos = ((row*(width)) + (width-col-1));
+}
 
 //set the colour
 if(pxTest){
